@@ -6,10 +6,12 @@ using System.Threading.Tasks;
 
 namespace Pomotasks.Domain.Interfaces
 {
-    internal interface IUserLogin
+    public interface ITodo : IEntityBase
     {
-        public string Email { get; set; }
+        public string Title { get; set; }
 
-        public string Password { get; set; }
+        public string Details { get; set; }
+
+        public bool Done { get; set; }
     }
 }

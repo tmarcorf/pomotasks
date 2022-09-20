@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Pomotasks.Domain.Interfaces
+namespace Pomotasks.Domain.Dtos
 {
-    public interface ITask : IEntityBase
+    public class DtoTodo : DtoBase
     {
         public string Title { get; set; }
 
