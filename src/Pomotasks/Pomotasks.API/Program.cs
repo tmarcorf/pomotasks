@@ -11,10 +11,7 @@ namespace Pomotasks.API
             var builder = WebApplication.CreateBuilder(args);
             var services = builder.Services;
 
-            services.AddDbContext<PomotasksContext>(context =>
-            {
-                context.UseSqlServer(builder.Configuration.GetConnectionString("PomotasksDb"));
-            });
+            services.AddDbContext<PomotasksContext>();
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();

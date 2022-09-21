@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Pomotasks.Domain.Entities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,5 +14,9 @@ namespace Pomotasks.Domain.Interfaces
         public string Details { get; set; }
 
         public bool Done { get; set; }
+
+        public Guid UserId { get; set; }
+
+        public User User { get; set; }
     }
 }
