@@ -23,5 +23,7 @@ namespace Pomotasks.Domain.Entities
         public GenderTypeEnum GenderType { get; set; }
 
         public Address Address { get; set; }
+
+        public List<Todo> Todos { get; set; }
     }
 }

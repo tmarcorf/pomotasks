@@ -14,5 +14,9 @@ namespace Pomotasks.Domain.Entities
         public string Details { get; set; }
 
         public bool Done { get; set; }
+
+        public Guid UserId { get; set; }
+
+        public User User { get; set; }
     }
 }
