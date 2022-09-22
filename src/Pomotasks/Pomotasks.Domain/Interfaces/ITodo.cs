@@ -9,14 +9,16 @@ namespace Pomotasks.Domain.Interfaces
 {
     public interface ITodo : IEntityBase
     {
-        public string Title { get; set; }
+       string Title { get; set; }
 
-        public string Details { get; set; }
+       string Details { get; set; }
 
-        public bool Done { get; set; }
+       DateTime CreationDate { get; set; }
 
-        public Guid UserId { get; set; }
+       bool Done { get; set; }
 
-        public User User { get; set; }
+       Guid UserId { get; set; }
+
+       User User { get; set; }
     }
 }

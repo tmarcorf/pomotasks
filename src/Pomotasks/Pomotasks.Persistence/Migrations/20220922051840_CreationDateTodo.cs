@@ -5,7 +5,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Pomotasks.Persistence.Migrations
 {
-    public partial class InitialCreate : Migration
+    public partial class CreationDateTodo : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -51,6 +51,7 @@ namespace Pomotasks.Persistence.Migrations
                     Id = table.Column<Guid>(type: "uniqueidentifier", nullable: false),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Details = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    CreationDate = table.Column<DateTime>(type: "datetime2", nullable: false),
                     Done = table.Column<bool>(type: "bit", nullable: false),
                     UserId = table.Column<Guid>(type: "uniqueidentifier", nullable: false)
                 },

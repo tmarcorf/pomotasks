@@ -13,26 +13,11 @@ namespace Pomotasks.Persistence.Repositories
     public class Repository<T> : IRepository<T>
         where T : class
     {
-        private readonly ApplicationContext _context;
+        protected readonly ApplicationContext _context;
 
         public Repository(ApplicationContext context)
         {
             _context = context;
-        }
-
-        public IEnumerable<T> FindAll()
-        {
-            return _context.Set<T>().Where(x => true).ToList();
-        }
-
-        public IEnumerable<T> FindBy(Expression<Func<T, bool>> filter)
-        {
-            return _context.Set<T>().Where(filter).ToList();
-        }
-
-        public T FindById(Guid id)
-        {
-            return _context.Set<T>().Find(id);
         }
 
         public void Add(T entity)

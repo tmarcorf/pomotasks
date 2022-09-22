@@ -13,6 +13,8 @@ namespace Pomotasks.Domain.Entities
 
         public string Details { get; set; }
 
+        public DateTime CreationDate { get; set; }
+
         public bool Done { get; set; }
 
         public Guid UserId { get; set; }

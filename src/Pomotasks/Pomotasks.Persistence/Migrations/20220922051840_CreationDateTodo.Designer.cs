@@ -12,8 +12,8 @@ using Pomotasks.Persistence.Context;
 namespace Pomotasks.Persistence.Migrations
 {
     [DbContext(typeof(ApplicationContext))]
-    [Migration("20220922013659_InitialCreate")]
-    partial class InitialCreate
+    [Migration("20220922051840_CreationDateTodo")]
+    partial class CreationDateTodo
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -40,6 +40,9 @@ namespace Pomotasks.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateTime>("CreationDate")
+                        .HasColumnType("datetime2");
 
                     b.Property<string>("Details")
                         .IsRequired()
