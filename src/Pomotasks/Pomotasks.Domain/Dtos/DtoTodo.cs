@@ -12,6 +12,8 @@ namespace Pomotasks.Domain.Dtos
 
         public string Details { get; set; }
 
+        public DateTime CreationDate { get; set; }
+
         public bool Done { get; set; }
     }
 }
