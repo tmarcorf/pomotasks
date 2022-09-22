@@ -1,4 +1,5 @@
 ﻿using Pomotasks.Domain.Interfaces;
+using Pomotasks.Persistence.Context;
 using Pomotasks.Persistence.Interfaces;
 using System;
 using System.Collections.Generic;
@@ -10,36 +11,53 @@ using System.Threading.Tasks;
 namespace Pomotasks.Persistence.Repositories
 {
     public class Repository<T> : IRepository<T>
-        where T : IEntityBase
+        where T : class
     {
-        public Task Add(T entity)
+        private readonly ApplicationContext _context;
+
+        public Repository(ApplicationContext context)
         {
-            throw new NotImplementedException();
+            _context = context;
         }
 
-        public Task<bool> Delete(T entity)
+        public IEnumerable<T> FindAll()
         {
-            throw new NotImplementedException();
+            return _context.Set<T>().Where(x => true).ToList();
         }
 
-        public Task<List<T>> GetBy(Expression<Func<T, bool>> filter)
+        public IEnumerable<T> FindBy(Expression<Func<T, bool>> filter)
         {
-            throw new NotImplementedException();
+            return _context.Set<T>().Where(filter).ToList();
         }
 
-        public Task<T> GetById(Guid id)
+        public T FindById(Guid id)
         {
-            throw new NotImplementedException();
+            return _context.Set<T>().Find(id);
         }
 
-        public Task<bool> SaveChangesAsync()
+        public void Add(T entity)
         {
-            throw new NotImplementedException();
+            _context.Set<T>().Add(entity);
         }
 
-        public Task Update(T entity)
+        public void Update(T entity)
         {
-            throw new NotImplementedException();
+            _context.Set<T>().Update(entity);
+        }
+
+        public void Delete(T entity)
+        {
+            _context.Set<T>().Remove(entity);
+        }
+
+        public void DeleteRange(IEnumerable<T> entities)
+        {
+            _context.Set<T>().RemoveRange(entities);
+        }
+
+        public async Task<bool> SaveChangesAsync()
+        {
+            return await _context.SaveChangesAsync() > 0;
         }
     }
 }

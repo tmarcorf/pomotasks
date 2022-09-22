@@ -1,6 +1,8 @@
 .vs
+.vscode/
 .suo
 .user
 bin
 obj
 Properties
+.editorconfig

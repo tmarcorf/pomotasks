@@ -1,24 +1,22 @@
-﻿using Pomotasks.Domain.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq.Expressions;
 
 namespace Pomotasks.Persistence.Interfaces
 {
-    public interface IRepository<T> where T : IEntityBase
+    public interface IRepository<T> where T : class
     {
-        Task<T> GetById(Guid id);
+        T FindById(Guid id);
 
-        Task<List<T>> GetBy(Expression<Func<T, bool>> filter);
+        IEnumerable<T> FindBy(Expression<Func<T, bool>> filter);
 
-        Task Add(T entity);
+        IEnumerable<T> FindAll();
 
-        Task Update(T entity);
+        void Add(T entity);
 
-        Task<bool> Delete(T entity);
+        void Update(T entity);
+
+        void Delete(T entity);
+
+        void DeleteRange(IEnumerable<T> entities);
 
         Task<bool> SaveChangesAsync();
     }

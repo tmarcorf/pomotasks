@@ -1,6 +1,8 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Pomotasks.Persistence.Context;
+using Pomotasks.Persistence.Interfaces;
+using Pomotasks.Persistence.Repositories;
 
 namespace Pomotasks.API
 {
@@ -11,7 +13,14 @@ namespace Pomotasks.API
             var builder = WebApplication.CreateBuilder(args);
             var services = builder.Services;
 
-            services.AddDbContext<PomotasksContext>();
+            services.AddDbContext<ApplicationContext>(options =>
+            {
+                options.UseSqlServer(
+                    builder.Configuration.GetConnectionString("DefaultConnection"),
+                    b => b.MigrationsAssembly(typeof(ApplicationContext).Assembly.FullName));
+            });
+
+            services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();
