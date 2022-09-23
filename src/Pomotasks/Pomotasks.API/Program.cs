@@ -1,3 +1,4 @@
+using AutoMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Pomotasks.Persistence.Context;
@@ -21,6 +22,8 @@ namespace Pomotasks.API
             });
 
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+            services.AddTransient<MapperConfigurationExpression>();
 
             services.AddControllers();
             services.AddEndpointsApiExplorer();
