@@ -13,16 +13,16 @@ namespace Pomotasks.Service.Interfaces
     {
         Task<DtoTodo> FindById(Guid id);
 
-        Task<IEnumerable<DtoTodo>> FindBy(Expression<Func<DtoTodo, bool>> filter);
+        Task<IEnumerable<DtoTodo>> FindBy(Expression<Func<Todo, bool>> filter);
 
         Task<IEnumerable<DtoTodo>> FindAll();
 
-        Task<DtoTodo> Add(DtoTodo todo);
+        Task<DtoTodo> Add(DtoTodo dtoTodo);
 
-        Task<DtoTodo> Update(DtoTodo todo);
+        Task<DtoTodo> Update(DtoTodo dtoTodo);
 
         Task<bool> Delete(Guid id);
 
-        Task<bool> DeleteRange(IEnumerable<Guid> todo);
+        Task<bool> DeleteRange(List<Guid> ids);
     }
 }

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Pomotasks.Persistence.Interfaces
 {
-    public interface ITodoRepository : IFindRepository<Todo>
+    public interface ITodoRepository : IFindRepository<Todo>, IRepository<Todo>
     {
     }
 }

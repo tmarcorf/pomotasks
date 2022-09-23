@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\Pomotasks.Domain\Pomotasks.Domain.csproj" />
+    <ProjectReference Include="..\Pomotasks.Persistence\Pomotasks.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
