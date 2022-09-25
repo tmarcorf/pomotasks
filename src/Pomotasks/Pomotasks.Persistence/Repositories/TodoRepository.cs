@@ -2,13 +2,7 @@
 using Pomotasks.Domain.Entities;
 using Pomotasks.Persistence.Context;
 using Pomotasks.Persistence.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
-using System.Security.Cryptography.X509Certificates;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pomotasks.Persistence.Repositories
 {
@@ -21,7 +15,7 @@ namespace Pomotasks.Persistence.Repositories
 
         public async Task<IEnumerable<Todo>> FindAll()
         {
-            IQueryable<Todo> query = _context.Todos.Include(todo => todo.User);
+            IQueryable<Todo> query = _context.Todos;
 
             query = query
                 .AsNoTracking()
@@ -32,7 +26,7 @@ namespace Pomotasks.Persistence.Repositories
 
         public async Task<IEnumerable<Todo>> FindBy(Expression<Func<Todo, bool>> filter)
         {
-            IQueryable<Todo> query = _context.Todos.Include(todo => todo.User);
+            IQueryable<Todo> query = _context.Todos;
 
             query = query
                 .AsNoTracking()
@@ -44,7 +38,7 @@ namespace Pomotasks.Persistence.Repositories
 
         public async Task<Todo> FindById(Guid id)
         {
-            IQueryable<Todo> query = _context.Todos.Include(todo => todo.User);
+            IQueryable<Todo> query = _context.Todos;
 
             query = query
                 .AsNoTracking()

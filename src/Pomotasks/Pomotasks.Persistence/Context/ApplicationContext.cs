@@ -1,8 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Pomotasks.Domain.Entities;
-using Pomotasks.Domain.Interfaces;
-using Pomotasks.Persistence;
 
 namespace Pomotasks.Persistence.Context
 {

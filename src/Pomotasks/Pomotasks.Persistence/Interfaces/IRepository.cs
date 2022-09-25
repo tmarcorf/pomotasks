@@ -1,6 +1,4 @@
-﻿using System.Linq.Expressions;
-
-namespace Pomotasks.Persistence.Interfaces
+﻿namespace Pomotasks.Persistence.Interfaces
 {
     public interface IRepository<T> where T : class
     {

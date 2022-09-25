@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Pomotasks.Domain.Interfaces
+﻿namespace Pomotasks.Domain.Interfaces
 {
-    public interface IMapper<TEntity, TDto> 
+    public interface IMapping<TEntity, TDto> 
         where TEntity : class 
         where TDto : class
     {

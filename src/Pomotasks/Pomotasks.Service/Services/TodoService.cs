@@ -10,9 +10,9 @@ namespace Pomotasks.Service.Services
     public class TodoService : ITodoService
     {
         private readonly ITodoRepository _repository;
-        private readonly IMapper<Todo, DtoTodo> _mapper;
+        private readonly IMapping<Todo, DtoTodo> _mapper;
 
-        public TodoService(ITodoRepository repository, IMapper<Todo, DtoTodo> mapper)
+        public TodoService(ITodoRepository repository, IMapping<Todo, DtoTodo> mapper)
         {
             _repository = repository;
             _mapper = mapper;
@@ -60,11 +60,12 @@ namespace Pomotasks.Service.Services
             }
         }
 
-        public async Task<DtoTodo> FindById(Guid id)
+        public async Task<DtoTodo> FindById(string id)
         {
             try
             {
-                var todo = await _repository.FindById(id);
+                var guid = GetIdAsGuid(id);
+                var todo = await _repository.FindById(guid);
 
                 if (todo is null)
                 {
@@ -140,11 +141,12 @@ namespace Pomotasks.Service.Services
             }
         }
 
-        public async Task<bool> Delete(Guid id)
+        public async Task<bool> Delete(string id)
         {
             try
             {
-                var todo = await _repository.FindById(id);
+                var guid = GetIdAsGuid(id);
+                var todo = await _repository.FindById(guid);
 
                 if (todo is null)
                 {
@@ -161,11 +163,12 @@ namespace Pomotasks.Service.Services
             }
         }
 
-        public async Task<bool> DeleteRange(List<Guid> ids)
+        public async Task<bool> DeleteRange(List<string> ids)
         {
             try
             {
-                var todos = await _repository.FindBy(todo => ids.Any(id => id == todo.Id));
+                var guids = GetIdsAsGuid(ids); 
+                var todos = await _repository.FindBy(todo => guids.Any(guid => guid == todo.Id));
 
                 if (todos is null)
                 {
@@ -183,6 +186,34 @@ namespace Pomotasks.Service.Services
             {
                 throw new Exception("Unable to delete tasks.", ex);
             }
+        }
+
+        private Guid GetIdAsGuid(string id)
+        {
+            Guid result;
+
+            if (Guid.TryParse(id, out result))
+            {
+                return result;
+            }
+
+            return Guid.Empty;
+        }
+
+        private List<Guid> GetIdsAsGuid(List<string> ids)
+        {
+            List<Guid> guids = new List<Guid>();
+
+            ids.ForEach(id =>
+            {
+                Guid result;
+                if (Guid.TryParse(id, out result))
+                {
+                    guids.Add(result);
+                }
+            });
+
+            return guids;
         }
     }
 }

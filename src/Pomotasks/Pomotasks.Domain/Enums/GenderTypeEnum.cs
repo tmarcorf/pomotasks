@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Pomotasks.Domain.Enums
+﻿namespace Pomotasks.Domain.Enums
 {
     public enum GenderTypeEnum
     {

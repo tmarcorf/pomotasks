@@ -1,12 +1,5 @@
-﻿using Pomotasks.Domain.Interfaces;
-using Pomotasks.Persistence.Context;
+﻿using Pomotasks.Persistence.Context;
 using Pomotasks.Persistence.Interfaces;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pomotasks.Persistence.Repositories
 {
