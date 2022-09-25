@@ -86,6 +86,7 @@ namespace Pomotasks.Service.Services
         {
             try
             {
+                dtoTodo.CreationDate = DateTime.Now;
                 var todo = _mapper.GetEntity(dtoTodo);
 
                 if (todo is not null)
