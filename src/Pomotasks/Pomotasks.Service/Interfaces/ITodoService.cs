@@ -10,7 +10,9 @@ namespace Pomotasks.Service.Interfaces
 
         Task<IEnumerable<DtoTodo>> FindBy(Expression<Func<Todo, bool>> filter);
 
-        Task<IEnumerable<DtoTodo>> FindAll();
+        Task<IEnumerable<DtoTodo>> FindAll(string userId, int skip, int take);
+
+        Task<int> GetTotalCount(string userId);
 
         Task<DtoTodo> Add(DtoTodo dtoTodo);
 

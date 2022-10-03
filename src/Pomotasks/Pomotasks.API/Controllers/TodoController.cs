@@ -1,13 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Pomotasks.Domain.Dtos;
 using Pomotasks.Service.Interfaces;
 
 namespace Pomotasks.API.Controllers
 {
-    [Route("api/v1/todo")]
+    [Route(template:"api/v1/todo")]
     [ApiController]
     public class TodoController : ControllerBase
     {
+        private const int DEFAULT_SKIP = 0;
+        private const int DEFAULT_TAKE = 10;
+        private const int LIMIT_TAKE = 30;
         private readonly ITodoService _service;
 
         public TodoController(ITodoService service)
@@ -15,19 +19,37 @@ namespace Pomotasks.API.Controllers
             _service = service;
         }
 
-        [HttpGet]
-        public async Task<IActionResult> FindAll()
+        [HttpGet(template:"{userId}/{skip:int}/{take:int}")]
+        public async Task<IActionResult> FindAllByUser(
+            [FromRoute] string userId,
+            [FromRoute] int skip = DEFAULT_SKIP, 
+            [FromRoute] int take = DEFAULT_TAKE)
         {
             try
             {
-                var dtoTodos = await _service.FindAll();
+                if (take > LIMIT_TAKE)
+                {
+                    return BadRequest($"O limite de itens por página é de {LIMIT_TAKE}");
+                }
+
+                var dtoTodos = await _service.FindAll(userId, skip, take);
 
                 if (dtoTodos is null)
                 {
                     return BadRequest();
                 }
 
-                return Ok(dtoTodos);
+                var totalCount = await _service.GetTotalCount(userId);
+                var currentPage = skip < take ? 1 : ((skip / take) + 1);
+
+                return Ok(new DtoPaged<DtoTodo>
+                {
+                    CurrentPage = currentPage,
+                    Skip = skip,
+                    Take = take,
+                    TotalCount = totalCount,
+                    Data = dtoTodos
+                });
             }
             catch (Exception)
             {

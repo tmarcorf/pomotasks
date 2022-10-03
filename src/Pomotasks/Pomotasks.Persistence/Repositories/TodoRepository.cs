@@ -13,12 +13,15 @@ namespace Pomotasks.Persistence.Repositories
         {
         }
 
-        public async Task<IEnumerable<Todo>> FindAll()
+        public async Task<IEnumerable<Todo>> FindAll(Guid userId, int skip, int take)
         {
             IQueryable<Todo> query = _context.Todos;
 
             query = query
                 .AsNoTracking()
+                .Where(todo => todo.UserId == userId)
+                .Skip(skip)
+                .Take(take)
                 .OrderBy(todo => todo.CreationDate);
 
             return await query.ToArrayAsync();
@@ -45,6 +48,17 @@ namespace Pomotasks.Persistence.Repositories
                 .Where(todo => todo.Id == id);
 
             return await query.FirstOrDefaultAsync();
+        }
+
+        public async Task<int> GetTotalCount(Guid userId)
+        {
+            IQueryable<Todo> query = _context.Todos;
+
+            query = query
+                .AsNoTracking()
+                .Where(todo => todo.UserId == userId);
+
+            return await query.CountAsync();
         }
     }
 }

@@ -18,11 +18,12 @@ namespace Pomotasks.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<DtoTodo>> FindAll()
+        public async Task<IEnumerable<DtoTodo>> FindAll(string userId, int skip, int take)
         {
             try
             {
-                var todos = await _repository.FindAll();
+                var userIdAsGuid = GetIdAsGuid(userId);
+                var todos = await _repository.FindAll(userIdAsGuid, skip, take);
 
                 if (todos is null)
                 {
@@ -78,6 +79,21 @@ namespace Pomotasks.Service.Services
             {
                 string message = string.Format("Could not find task {0}", id);
 
+                throw new Exception(message, ex);
+            }
+        }
+
+        public async Task<int> GetTotalCount(string userId)
+        {
+            try
+            {
+                var userIdAsGuid = GetIdAsGuid(userId);
+
+                return await _repository.GetTotalCount(userIdAsGuid);
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format("Não foi possível obter o total de tarefas para o Id de usuário ", userId);
                 throw new Exception(message, ex);
             }
         }
@@ -216,5 +232,7 @@ namespace Pomotasks.Service.Services
 
             return guids;
         }
+
+        
     }
 }

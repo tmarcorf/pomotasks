@@ -2,6 +2,11 @@
 {
     public class DtoTodo : DtoBase
     {
+        public DtoTodo()
+        {
+            CreationDate = DateTime.Now;
+        }
+
         public string Title { get; set; }
 
         public string Details { get; set; }
