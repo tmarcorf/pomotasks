@@ -1,8 +1,11 @@
-﻿using Pomotasks.Domain.Dtos;
+﻿using FluentValidation.Results;
+using Pomotasks.Domain.Dtos;
 using Pomotasks.Domain.Entities;
 using Pomotasks.Domain.Interfaces;
+using Pomotasks.Domain.Validations;
 using Pomotasks.Persistence.Interfaces;
 using Pomotasks.Service.Interfaces;
+using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace Pomotasks.Service.Services
@@ -103,6 +106,9 @@ namespace Pomotasks.Service.Services
             try
             {
                 dtoTodo.CreationDate = DateTime.Now;
+
+                Validate(dtoTodo);
+                
                 var todo = _mapper.GetEntity(dtoTodo);
 
                 if (todo is not null)
@@ -133,6 +139,8 @@ namespace Pomotasks.Service.Services
             {
                 var id = Guid.Parse(dtoTodo.Id);
                 var todo = await _repository.FindById(id);
+
+                Validate(dtoTodo);
 
                 if (todo is not null)
                 {
@@ -205,6 +213,8 @@ namespace Pomotasks.Service.Services
             }
         }
 
+        #region PRIVATE METHODS
+
         private Guid GetIdAsGuid(string id)
         {
             Guid result;
@@ -233,6 +243,31 @@ namespace Pomotasks.Service.Services
             return guids;
         }
 
-        
+        private void Validate(DtoTodo dtoTodo)
+        {
+            TodoValidator validator = new();
+            var result = validator.Validate(dtoTodo);
+
+            if (!result.IsValid)
+            {
+                var errors = GetErrors(result.Errors);
+
+                throw new Exception(errors);
+            }
+        }
+
+        private string GetErrors(List<ValidationFailure> validationErrors)
+        {
+            string errors = string.Empty;
+
+            validationErrors.ForEach(error =>
+            {
+                errors += error.PropertyName + ": " + error.ErrorMessage + Environment.NewLine;
+            });
+
+            return errors;
+        }
+
+        #endregion
     }
 }

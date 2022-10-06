@@ -1,11 +1,11 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Protocols.OpenIdConnect;
 using Pomotasks.Domain.Dtos;
 using Pomotasks.Service.Interfaces;
+using System.Net;
 
 namespace Pomotasks.API.Controllers
 {
-    [Route(template:"api/v1/todo")]
+    [Route(template: "api/v1/todo")]
     [ApiController]
     public class TodoController : ControllerBase
     {
@@ -19,10 +19,10 @@ namespace Pomotasks.API.Controllers
             _service = service;
         }
 
-        [HttpGet(template:"{userId}/{skip:int}/{take:int}")]
+        [HttpGet(template: "{userId}/{skip:int}/{take:int}")]
         public async Task<IActionResult> FindAllByUser(
             [FromRoute] string userId,
-            [FromRoute] int skip = DEFAULT_SKIP, 
+            [FromRoute] int skip = DEFAULT_SKIP,
             [FromRoute] int take = DEFAULT_TAKE)
         {
             try
@@ -39,21 +39,11 @@ namespace Pomotasks.API.Controllers
                     return BadRequest();
                 }
 
-                var totalCount = await _service.GetTotalCount(userId);
-                var currentPage = skip < take ? 1 : ((skip / take) + 1);
-
-                return Ok(new DtoPaged<DtoTodo>
-                {
-                    CurrentPage = currentPage,
-                    Skip = skip,
-                    Take = take,
-                    TotalCount = totalCount,
-                    Data = dtoTodos
-                });
+                return Ok(ConvertToPaginatedResult(userId, skip, take, dtoTodos));
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -73,9 +63,9 @@ namespace Pomotasks.API.Controllers
 
                 return Ok(dtoTodo);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -95,9 +85,9 @@ namespace Pomotasks.API.Controllers
 
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -120,9 +110,9 @@ namespace Pomotasks.API.Controllers
 
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
         }
 
@@ -140,11 +130,25 @@ namespace Pomotasks.API.Controllers
 
                 return Ok(result);
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-
-                throw;
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
+        }
+
+        private DtoPaged<DtoTodo> ConvertToPaginatedResult(string userId, int skip, int take, IEnumerable<DtoTodo> dtoTodos)
+        {
+            var totalCount = _service.GetTotalCount(userId);
+            var currentPage = skip < take ? 1 : ((skip / take) + 1);
+
+            return new DtoPaged<DtoTodo>
+            {
+                CurrentPage = currentPage,
+                Skip = skip,
+                Take = take,
+                TotalCount = totalCount.Result,
+                Data = dtoTodos
+            };
         }
     }
 }
