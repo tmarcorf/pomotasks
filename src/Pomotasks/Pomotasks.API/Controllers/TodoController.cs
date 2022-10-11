@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Pomotasks.Domain.Dtos;
+using Pomotasks.Domain.Globalization;
 using Pomotasks.Service.Interfaces;
 using System.Net;
 
@@ -29,14 +30,18 @@ namespace Pomotasks.API.Controllers
             {
                 if (take > LIMIT_TAKE)
                 {
-                    return BadRequest($"O limite de itens por página é de {LIMIT_TAKE}");
+                    string message = string.Format(Message.GetMessage("21"), LIMIT_TAKE);
+
+                    return BadRequest(message);
                 }
 
                 var dtoTodos = await _service.FindAll(userId, skip, take);
 
                 if (dtoTodos is null)
                 {
-                    return BadRequest();
+                    var message = string.Format(Message.GetMessage("24"), userId);
+
+                    return BadRequest(message);
                 }
 
                 return Ok(ConvertToPaginatedResult(userId, skip, take, dtoTodos));
@@ -56,7 +61,7 @@ namespace Pomotasks.API.Controllers
 
                 if (dtoTodo is null)
                 {
-                    string message = string.Format("The requested id {0} was not found.", id);
+                    string message = string.Format(Message.GetMessage("1"), id);
 
                     return NotFound(message);
                 }
@@ -98,14 +103,14 @@ namespace Pomotasks.API.Controllers
             {
                 if (dtoTodo is null)
                 {
-                    return BadRequest("The ToDo information are required");
+                    return BadRequest(Message.GetMessage("22"));
                 }
 
                 var result = await _service.Update(dtoTodo);
 
                 if (result is null)
                 {
-                    return BadRequest("Some information are invalid.");
+                    return BadRequest(Message.GetMessage("23"));
                 }
 
                 return Ok(result);
@@ -125,7 +130,7 @@ namespace Pomotasks.API.Controllers
 
                 if (!result)
                 {
-                    return BadRequest("Could not delete.");
+                    return BadRequest(Message.GetMessage("10"));
                 }
 
                 return Ok(result);
@@ -134,6 +139,12 @@ namespace Pomotasks.API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
+        }
+
+        [HttpGet]
+        public IActionResult GetMessage(string key, string component)
+        {
+            return Ok(Message.GetMessage(key, new string[] { component }));
         }
 
         private DtoPaged<DtoTodo> ConvertToPaginatedResult(string userId, int skip, int take, IEnumerable<DtoTodo> dtoTodos)

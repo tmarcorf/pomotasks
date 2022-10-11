@@ -48,8 +48,17 @@ namespace Pomotasks.API
 
             app.UseHttpsRedirection();
 
-            app.UseAuthorization();
+            // Globalization
+            var supportedCultures = new[] { "pt-BR", "en-US" };
 
+            var localizationOptions = new RequestLocalizationOptions()
+                .SetDefaultCulture(supportedCultures[0])
+                .AddSupportedCultures(supportedCultures)
+                .AddSupportedUICultures(supportedCultures);
+
+            app.UseRequestLocalization(localizationOptions);
+
+            app.UseAuthorization();
 
             app.MapControllers();
 

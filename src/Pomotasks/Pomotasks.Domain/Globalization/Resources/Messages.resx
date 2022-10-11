@@ -117,46 +117,76 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="CouldNotFindTask" xml:space="preserve">
+  <data name="1" xml:space="preserve">
     <value>Não foi possível encontrar a tarefa. Id: {0}</value>
   </data>
-  <data name="CouldNotFindTasks" xml:space="preserve">
-    <value>Não foi possível encontrar as tarefas solicitadas.</value>
-  </data>
-  <data name="CouldNotFindTotalTask" xml:space="preserve">
-    <value>Não foi possível obter o total de tarefas. UserId: {0}</value>
-  </data>
-  <data name="CreationDateNoHigher" xml:space="preserve">
-    <value>A data de criação não pode ser superior à data atual</value>
-  </data>
-  <data name="CreationDateRequired" xml:space="preserve">
-    <value>A data de criação é obrigatória.</value>
-  </data>
-  <data name="Details" xml:space="preserve">
-    <value>Detalhes</value>
-  </data>
-  <data name="DetailsRequired" xml:space="preserve">
-    <value>Os detalhes são obrigatório.</value>
-  </data>
-  <data name="MaximumAllowed" xml:space="preserve">
-    <value>O tamanho máximo permitido é de {0} caracteres.</value>
-  </data>
-  <data name="NotPossibleToAddTask" xml:space="preserve">
-    <value>Não foi possível adicionar a tarefa. Title: {0}</value>
-  </data>
-  <data name="NotPossibleToDeleteTask" xml:space="preserve">
+  <data name="10" xml:space="preserve">
     <value>Não foi possível excluir a tarefa. Id: {0}</value>
   </data>
-  <data name="NotPossibleToUpdateTask" xml:space="preserve">
+  <data name="11" xml:space="preserve">
     <value>Não foi possível atualizar a tarefa. Title: {0}</value>
   </data>
-  <data name="TaskToDeleteNotExist" xml:space="preserve">
+  <data name="12" xml:space="preserve">
     <value>A tarefa a ser excluída não existe. Id: {0}</value>
   </data>
-  <data name="Title" xml:space="preserve">
+  <data name="13" xml:space="preserve">
     <value>Título</value>
   </data>
-  <data name="TitleRequired" xml:space="preserve">
+  <data name="14" xml:space="preserve">
     <value>O título é obrigatório.</value>
+  </data>
+  <data name="15" xml:space="preserve">
+    <value>Id do usuário</value>
+  </data>
+  <data name="16" xml:space="preserve">
+    <value>O Id do usuário é obrigatório.</value>
+  </data>
+  <data name="17" xml:space="preserve">
+    <value>A chave da mensagem não pode ser vazia.</value>
+  </data>
+  <data name="18" xml:space="preserve">
+    <value>As tarefas a serem excluídas não existem.</value>
+  </data>
+  <data name="19" xml:space="preserve">
+    <value>Não foi possível excluir as tarefas.</value>
+  </data>
+  <data name="2" xml:space="preserve">
+    <value>Não foi possível encontrar as tarefas solicitadas.</value>
+  </data>
+  <data name="20" xml:space="preserve">
+    <value>Data de criação</value>
+  </data>
+  <data name="21" xml:space="preserve">
+    <value>O limite de itens por página é de {0}</value>
+  </data>
+  <data name="22" xml:space="preserve">
+    <value>As informações da tarefa são obrigatórias</value>
+  </data>
+  <data name="23" xml:space="preserve">
+    <value>Algumas informações estão inválidas, verifique.</value>
+  </data>
+  <data name="24" xml:space="preserve">
+    <value>Não foi possível encontrar as tarefas para o usuário solicitado. UserId: {0}</value>
+  </data>
+  <data name="3" xml:space="preserve">
+    <value>Não foi possível obter o total de tarefas. UserId: {0}</value>
+  </data>
+  <data name="4" xml:space="preserve">
+    <value>A data de criação não pode ser superior à data atual.</value>
+  </data>
+  <data name="5" xml:space="preserve">
+    <value>A data de criação é obrigatória.</value>
+  </data>
+  <data name="6" xml:space="preserve">
+    <value>Detalhes</value>
+  </data>
+  <data name="7" xml:space="preserve">
+    <value>Os detalhes são obrigatório.</value>
+  </data>
+  <data name="8" xml:space="preserve">
+    <value>O tamanho máximo permitido é de {0} caracteres.</value>
+  </data>
+  <data name="9" xml:space="preserve">
+    <value>Não foi possível adicionar a tarefa. Title: {0}</value>
   </data>
 </root>

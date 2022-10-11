@@ -1,6 +1,7 @@
 ﻿using FluentValidation.Results;
 using Pomotasks.Domain.Dtos;
 using Pomotasks.Domain.Entities;
+using Pomotasks.Domain.Globalization;
 using Pomotasks.Domain.Interfaces;
 using Pomotasks.Domain.Validations;
 using Pomotasks.Persistence.Interfaces;
@@ -28,7 +29,7 @@ namespace Pomotasks.Service.Services
                 var userIdAsGuid = GetIdAsGuid(userId);
                 var todos = await _repository.FindAll(userIdAsGuid, skip, take);
 
-                if (todos is null)
+                if (todos is null || todos.Count() == 0)
                 {
                     return null;
                 }
@@ -37,7 +38,7 @@ namespace Pomotasks.Service.Services
             }
             catch (Exception ex)
             {
-                string message = "Could not find tasks";
+                string message = Message.GetMessage("2");
 
                 throw new Exception(message, ex);
             }
@@ -49,7 +50,7 @@ namespace Pomotasks.Service.Services
             {
                 var todos = await _repository.FindBy(filter);
 
-                if (todos is null)
+                if (todos is null || todos.Count() == 0)
                 {
                     return null;
                 }
@@ -58,7 +59,7 @@ namespace Pomotasks.Service.Services
             }
             catch (Exception ex)
             {
-                string message = "Could not find tasks";
+                string message = Message.GetMessage("2");
 
                 throw new Exception(message, ex);
             }
@@ -80,7 +81,7 @@ namespace Pomotasks.Service.Services
             }
             catch (Exception ex)
             {
-                string message = string.Format("Could not find task {0}", id);
+                string message = string.Format(Message.GetMessage("1"), id);
 
                 throw new Exception(message, ex);
             }
@@ -96,7 +97,8 @@ namespace Pomotasks.Service.Services
             }
             catch (Exception ex)
             {
-                string message = string.Format("Não foi possível obter o total de tarefas para o Id de usuário ", userId);
+                string message = string.Format(Message.GetMessage("3"), userId);
+
                 throw new Exception(message, ex);
             }
         }
@@ -127,7 +129,7 @@ namespace Pomotasks.Service.Services
             }
             catch (Exception ex)
             {
-                string message = string.Format("It was not possible to add the task {0}", dtoTodo.Title);
+                string message = string.Format(Message.GetMessage("9"), dtoTodo.Title);
 
                 throw new Exception(message, ex);
             }
@@ -160,7 +162,7 @@ namespace Pomotasks.Service.Services
             }
             catch (Exception ex)
             {
-                string message = string.Format("It was not possible to update the task {0}", dtoTodo.Title);
+                string message = string.Format(Message.GetMessage("11"), dtoTodo.Title);
 
                 throw new Exception(message, ex);
             }
@@ -175,7 +177,7 @@ namespace Pomotasks.Service.Services
 
                 if (todo is null)
                 {
-                    throw new Exception("Task to delete not found.");
+                    throw new Exception(Message.GetMessage("12"));
                 }
 
                 _repository.Delete(todo);
@@ -184,7 +186,9 @@ namespace Pomotasks.Service.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to delete task.", ex);
+                string message = string.Format(Message.GetMessage("10"), id);
+
+                throw new Exception(message, ex);
             }
         }
 
@@ -195,9 +199,9 @@ namespace Pomotasks.Service.Services
                 var guids = GetIdsAsGuid(ids); 
                 var todos = await _repository.FindBy(todo => guids.Any(guid => guid == todo.Id));
 
-                if (todos is null)
+                if (todos is null || todos.Count() == 0)
                 {
-                    throw new Exception("Tasks to delete not found.");
+                    throw new Exception(Message.GetMessage("18"));
                 }
 
                 if (todos.Count() == ids.Count)
@@ -209,7 +213,7 @@ namespace Pomotasks.Service.Services
             }
             catch (Exception ex)
             {
-                throw new Exception("Unable to delete tasks.", ex);
+                throw new Exception(Message.GetMessage("19"), ex);
             }
         }
 

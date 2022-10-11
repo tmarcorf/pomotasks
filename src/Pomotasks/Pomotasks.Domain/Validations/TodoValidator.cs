@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using Pomotasks.Domain.Dtos;
+using Pomotasks.Domain.Globalization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -23,24 +24,28 @@ namespace Pomotasks.Domain.Validations
 
         private void TitleRules()
         {
+            var maxLenghtMessage = string.Format(Message.GetMessage("8"), TITLE_MAX_LENGTH);
+
             RuleFor(x => x.Title)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("O título é obrigatório.")
+                .WithMessage(Message.GetMessage("14"))
                 .Must(x => x.Length <= TITLE_MAX_LENGTH)
-                .WithMessage($"O tamanho máximo permitido é de {TITLE_MAX_LENGTH} caracteres.")
-                .WithName("Title");
+                .WithMessage(maxLenghtMessage)
+                .WithName(Message.GetMessage("13"));
         }
 
         private void DetailsRules()
         {
+            var maxLenghtMessage = string.Format(Message.GetMessage("8"), DETAILS_MAX_LENGTH);
+
             RuleFor(x => x.Details)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("Os detalhes são obrigatório.")
+                .WithMessage(Message.GetMessage("7"))
                 .Must(x => x.Length <= DETAILS_MAX_LENGTH)
-                .WithMessage($"O tamanho máximo permitido é de {DETAILS_MAX_LENGTH} caracteres.")
-                .WithName("Details");
+                .WithMessage(maxLenghtMessage)
+                .WithName(Message.GetMessage("6"));
         }
 
         private void CreationDateRules()
@@ -48,10 +53,10 @@ namespace Pomotasks.Domain.Validations
             RuleFor(x => x.CreationDate)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("A data de criação é obrigatória.")
+                .WithMessage(Message.GetMessage("5"))
                 .Must(x => x.Date <= DateTime.Now)
-                .WithMessage("A data de criação não pode ser superior à data atual")
-                .WithName("CreationDate");
+                .WithMessage(Message.GetMessage("4"))
+                .WithName(Message.GetMessage("20"));
         }
 
         private void UserIdRules()
@@ -59,8 +64,8 @@ namespace Pomotasks.Domain.Validations
             RuleFor(x => x.UserId)
                 .NotNull()
                 .NotEmpty()
-                .WithMessage("O Id do usuário é obrigatório.")
-                .WithName("UserId");
+                .WithMessage(Message.GetMessage("16"))
+                .WithName(Message.GetMessage("15"));
         }
     }
 }
