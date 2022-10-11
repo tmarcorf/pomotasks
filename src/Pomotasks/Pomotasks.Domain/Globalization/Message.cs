@@ -25,8 +25,6 @@ namespace Pomotasks.Domain.Globalization
             Configure();
 
             ValidateKey(key);
-
-            string message = string.Empty;
             var messagesToIncrement = new List<string>();
 
             foreach (var componentMessage in componentMessages)
@@ -36,7 +34,7 @@ namespace Pomotasks.Domain.Globalization
                 messagesToIncrement.Add(_resourceManager.GetString(componentMessage));
             }
 
-            message = string.Format(_resourceManager.GetString(key), messagesToIncrement.ToArray());
+            string message = string.Format(_resourceManager.GetString(key), messagesToIncrement.ToArray());
 
             return message;
         }

@@ -35,16 +35,16 @@ namespace Pomotasks.API.Controllers
                     return BadRequest(message);
                 }
 
-                var dtoTodos = await _service.FindAll(userId, skip, take);
+                var pagedResult = await _service.FindAll(userId, skip, take);
 
-                if (dtoTodos is null)
+                if (pagedResult is null)
                 {
                     var message = string.Format(Message.GetMessage("24"), userId);
 
                     return BadRequest(message);
                 }
 
-                return Ok(ConvertToPaginatedResult(userId, skip, take, dtoTodos));
+                return Ok(pagedResult);
             }
             catch (Exception ex)
             {
@@ -139,27 +139,6 @@ namespace Pomotasks.API.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
             }
-        }
-
-        [HttpGet]
-        public IActionResult GetMessage(string key, string component)
-        {
-            return Ok(Message.GetMessage(key, new string[] { component }));
-        }
-
-        private DtoPaged<DtoTodo> ConvertToPaginatedResult(string userId, int skip, int take, IEnumerable<DtoTodo> dtoTodos)
-        {
-            var totalCount = _service.GetTotalCount(userId);
-            var currentPage = skip < take ? 1 : ((skip / take) + 1);
-
-            return new DtoPaged<DtoTodo>
-            {
-                CurrentPage = currentPage,
-                Skip = skip,
-                Take = take,
-                TotalCount = totalCount.Result,
-                Data = dtoTodos
-            };
         }
     }
 }

@@ -11,7 +11,7 @@ using System.Linq.Expressions;
 
 namespace Pomotasks.Service.Services
 {
-    public class TodoService : ITodoService
+    public class TodoService : ServiceBase<DtoTodo, TodoValidator>, ITodoService
     {
         private readonly ITodoRepository _repository;
         private readonly IMapping<Todo, DtoTodo> _mapper;
@@ -22,7 +22,7 @@ namespace Pomotasks.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<IEnumerable<DtoTodo>> FindAll(string userId, int skip, int take)
+        public async Task<DtoPaged<DtoTodo>> FindAll(string userId, int skip, int take)
         {
             try
             {
@@ -34,7 +34,10 @@ namespace Pomotasks.Service.Services
                     return null;
                 }
 
-                return _mapper.GetDtos(todos);
+                var totalCount = GetTotalCount(userId);
+                var currentPage = skip < take ? 1 : ((skip / take) + 1);
+
+                return ConvertToPaginatedResult(skip, take, totalCount.Result, _mapper.GetDtos(todos));
             }
             catch (Exception ex)
             {
@@ -216,62 +219,5 @@ namespace Pomotasks.Service.Services
                 throw new Exception(Message.GetMessage("19"), ex);
             }
         }
-
-        #region PRIVATE METHODS
-
-        private Guid GetIdAsGuid(string id)
-        {
-            Guid result;
-
-            if (Guid.TryParse(id, out result))
-            {
-                return result;
-            }
-
-            return Guid.Empty;
-        }
-
-        private List<Guid> GetIdsAsGuid(List<string> ids)
-        {
-            List<Guid> guids = new List<Guid>();
-
-            ids.ForEach(id =>
-            {
-                Guid result;
-                if (Guid.TryParse(id, out result))
-                {
-                    guids.Add(result);
-                }
-            });
-
-            return guids;
-        }
-
-        private void Validate(DtoTodo dtoTodo)
-        {
-            TodoValidator validator = new();
-            var result = validator.Validate(dtoTodo);
-
-            if (!result.IsValid)
-            {
-                var errors = GetErrors(result.Errors);
-
-                throw new Exception(errors);
-            }
-        }
-
-        private string GetErrors(List<ValidationFailure> validationErrors)
-        {
-            string errors = string.Empty;
-
-            validationErrors.ForEach(error =>
-            {
-                errors += error.PropertyName + ": " + error.ErrorMessage + Environment.NewLine;
-            });
-
-            return errors;
-        }
-
-        #endregion
     }
 }
