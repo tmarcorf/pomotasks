@@ -1,13 +1,6 @@
 ﻿using FluentValidation;
 using FluentValidation.Results;
-using Microsoft.EntityFrameworkCore.Migrations.Operations;
 using Pomotasks.Domain.Dtos;
-using Pomotasks.Domain.Validations;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Pomotasks.Service.Services
 {
@@ -15,34 +8,50 @@ namespace Pomotasks.Service.Services
         where T : class
         where TValidator : AbstractValidator<T>
     {
-        private ValidationResult _validationResult;
-
-        protected DtoPaged<T> ConvertToPaginatedResult(
+        protected void ConfigurePagedResult(
+            DtoPagedResult<T> dtoPaged,
             int skip,
             int take,
             int totalCount,
-            IEnumerable<T> data)
+            IEnumerable<T> data,
+            List<string> errorMessages = null)
         {
-            var currentPage = skip < take ? 1 : ((skip / take) + 1);
+            dtoPaged.CurrentPage = GetCurrentPage(skip, take);
+            dtoPaged.Skip = skip;
+            dtoPaged.Take = take;
+            dtoPaged.TotalCount = totalCount;
+            dtoPaged.Data = data;
 
-            return new DtoPaged<T>
-            {
-                CurrentPage = currentPage,
-                Skip = skip,
-                Take = take,
-                TotalCount = totalCount,
-                Data = data
-            };
+            ConfigureResult(dtoPaged, errorMessages);
         }
 
-        public ValidationResult Validate(T dto)
+        protected void ConfigureSingleResult(DtoSingleResult<T> singleResult, T dto, List<string> errorMessages = null)
+        {
+            singleResult.DtoResult = dto;
+
+            ConfigureResult(singleResult, errorMessages);
+        }
+
+        protected List<string> GetErrors(List<ValidationFailure> validationErrors)
+        {
+            List<string> errors = new();
+
+            validationErrors.ForEach(error =>
+            {
+                errors.Add(error.PropertyName + ": " + error.ErrorMessage);
+            });
+
+            return errors;
+        }
+
+        protected ValidationResult Validate(T dto)
         {
             var validator = Activator.CreateInstance(typeof(TValidator));
 
             return (validator as TValidator).Validate(dto);
         }
 
-        public Guid GetIdAsGuid(string id)
+        protected Guid GetIdAsGuid(string id)
         {
             Guid result;
 
@@ -54,7 +63,7 @@ namespace Pomotasks.Service.Services
             return Guid.Empty;
         }
 
-        public List<Guid> GetIdsAsGuid(List<string> ids)
+        protected List<Guid> GetIdsAsGuid(List<string> ids)
         {
             List<Guid> guids = new List<Guid>();
 
@@ -70,16 +79,19 @@ namespace Pomotasks.Service.Services
             return guids;
         }
 
-        private List<string> GetErrors(List<ValidationFailure> validationErrors)
+        protected void ConfigureResult(DtoResult result, List<string> errorMessages = null)
         {
-            List<string> errors = new();
-
-            validationErrors.ForEach(error =>
+            if (errorMessages is not null && errorMessages.Count > 0)
             {
-                errors.Add(error.PropertyName + ": " + error.ErrorMessage + Environment.NewLine);
-            });
+                result.Errors.AddRange(errorMessages);
+            }
 
-            return errors;
+            result.Success = (errorMessages is null || errorMessages.Count == 0);
+        }
+
+        private int GetCurrentPage(int skip, int take)
+        {
+            return skip < take ? 1 : ((skip / take) + 1);
         }
     }
 }

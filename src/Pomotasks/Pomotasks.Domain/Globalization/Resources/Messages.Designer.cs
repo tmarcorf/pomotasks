@@ -214,6 +214,24 @@ namespace Pomotasks.Domain.Globalization.Resources {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to Não foi possível encontrar as tarefas com o filtro informado..
+        /// </summary>
+        internal static string _25 {
+            get {
+                return ResourceManager.GetString("25", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized string similar to Não existe uma tarefa cadastrada para o Id informado. Id: {0}.
+        /// </summary>
+        internal static string _26 {
+            get {
+                return ResourceManager.GetString("26", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to Não foi possível obter o total de tarefas. UserId: {0}.
         /// </summary>
         internal static string _3 {

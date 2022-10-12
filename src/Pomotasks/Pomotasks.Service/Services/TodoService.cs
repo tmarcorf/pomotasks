@@ -1,12 +1,10 @@
-﻿using FluentValidation.Results;
-using Pomotasks.Domain.Dtos;
+﻿using Pomotasks.Domain.Dtos;
 using Pomotasks.Domain.Entities;
 using Pomotasks.Domain.Globalization;
 using Pomotasks.Domain.Interfaces;
 using Pomotasks.Domain.Validations;
 using Pomotasks.Persistence.Interfaces;
 using Pomotasks.Service.Interfaces;
-using System.ComponentModel.DataAnnotations;
 using System.Linq.Expressions;
 
 namespace Pomotasks.Service.Services
@@ -22,54 +20,88 @@ namespace Pomotasks.Service.Services
             _mapper = mapper;
         }
 
-        public async Task<DtoPaged<DtoTodo>> FindAll(string userId, int skip, int take)
+        public async Task<DtoPagedResult<DtoTodo>> FindAll(string userId, int skip, int take)
         {
+            DtoPagedResult<DtoTodo> result = new();
+            int totalCount;
+            var userIdAsGuid = GetIdAsGuid(userId);
+            var errorMessages = new List<string>();
+
             try
             {
-                var userIdAsGuid = GetIdAsGuid(userId);
                 var todos = await _repository.FindAll(userIdAsGuid, skip, take);
 
                 if (todos is null || todos.Count() == 0)
                 {
-                    return null;
+                    totalCount = 0;
+                    errorMessages.Add(string.Format(Message.GetMessage("24"), userId));
+
+                    ConfigurePagedResult(result, skip, take, totalCount, new List<DtoTodo>(), errorMessages);
+
+                    return result;
                 }
 
-                var totalCount = GetTotalCount(userId);
-                var currentPage = skip < take ? 1 : ((skip / take) + 1);
+                totalCount = GetTotalCountBy(x => x.UserId == userIdAsGuid).Result;
 
-                return ConvertToPaginatedResult(skip, take, totalCount.Result, _mapper.GetDtos(todos));
+                ConfigurePagedResult(result, skip, take, totalCount, _mapper.GetDtos(todos));
+
+                return result;
             }
             catch (Exception ex)
             {
-                string message = Message.GetMessage("2");
+                errorMessages.Clear();
 
-                throw new Exception(message, ex);
+                errorMessages.Add(Message.GetMessage("2"));
+                errorMessages.Add(ex.Message);
+
+                ConfigurePagedResult(result, skip, take, 0, new List<DtoTodo>(), errorMessages);
+
+                return result;
             }
         }
 
-        public async Task<IEnumerable<DtoTodo>> FindBy(Expression<Func<Todo, bool>> filter)
+        public async Task<DtoPagedResult<DtoTodo>> FindBy(Expression<Func<Todo, bool>> filter, int skip, int take)
         {
+            DtoPagedResult<DtoTodo> result = new();
+            int totalCount;
+            var errorMessages = new List<string>();
+
             try
             {
-                var todos = await _repository.FindBy(filter);
+                var todos = await _repository.FindBy(filter, skip, take);
 
                 if (todos is null || todos.Count() == 0)
                 {
-                    return null;
+                    totalCount = 0;
+                    errorMessages.Add(string.Format(Message.GetMessage("25")));
+
+                    ConfigurePagedResult(result, skip, take, totalCount, new List<DtoTodo>(), errorMessages);
+
+                    return result;
                 }
 
-                return _mapper.GetDtos(todos);
+                ConfigurePagedResult(result, skip, take, todos.Count(), _mapper.GetDtos(todos));
+
+                return result;
             }
             catch (Exception ex)
             {
-                string message = Message.GetMessage("2");
+                errorMessages.Clear();
 
-                throw new Exception(message, ex);
+                errorMessages.Add(Message.GetMessage("2"));
+                errorMessages.Add(ex.Message);
+
+                ConfigurePagedResult(result, skip, take, 0, new List<DtoTodo>(), errorMessages);
+
+                return result;
             }
         }
 
-        public async Task<DtoTodo> FindById(string id)
+        public async Task<DtoSingleResult<DtoTodo>> FindById(string id)
         {
+            DtoSingleResult<DtoTodo> singleResult = new();
+            var errorMessages = new List<string>();
+
             try
             {
                 var guid = GetIdAsGuid(id);
@@ -77,43 +109,50 @@ namespace Pomotasks.Service.Services
 
                 if (todo is null)
                 {
-                    return null;
+                    var message = string.Format(Message.GetMessage("26"), id);
+                    errorMessages.Add(message);
+
+                    ConfigureSingleResult(singleResult, null, errorMessages);
+
+                    return singleResult;
                 }
 
-                return _mapper.GetDto(todo);
+                ConfigureSingleResult(singleResult, _mapper.GetDto(todo));
+
+                return singleResult;
             }
             catch (Exception ex)
             {
                 string message = string.Format(Message.GetMessage("1"), id);
 
-                throw new Exception(message, ex);
+                errorMessages.Clear();
+                errorMessages.Add(message);
+                errorMessages.Add(ex.Message);
+
+                ConfigureSingleResult(singleResult, null, errorMessages);
+
+                return singleResult;
             }
         }
 
-        public async Task<int> GetTotalCount(string userId)
+        public async Task<DtoSingleResult<DtoTodo>> Add(DtoTodo dtoTodo)
         {
-            try
-            {
-                var userIdAsGuid = GetIdAsGuid(userId);
+            DtoSingleResult<DtoTodo> singleResult = new();
+            var errorMessages = new List<string>();
 
-                return await _repository.GetTotalCount(userIdAsGuid);
-            }
-            catch (Exception ex)
-            {
-                string message = string.Format(Message.GetMessage("3"), userId);
-
-                throw new Exception(message, ex);
-            }
-        }
-
-        public async Task<DtoTodo> Add(DtoTodo dtoTodo)
-        {
             try
             {
                 dtoTodo.CreationDate = DateTime.Now;
 
-                Validate(dtoTodo);
-                
+                var validationResult = Validate(dtoTodo);
+
+                if (!validationResult.IsValid)
+                {
+                    ConfigureSingleResult(singleResult, null, GetErrors(validationResult.Errors));
+
+                    return singleResult;
+                }
+
                 var todo = _mapper.GetEntity(dtoTodo);
 
                 if (todo is not null)
@@ -122,102 +161,179 @@ namespace Pomotasks.Service.Services
 
                     if (await _repository.SaveChangesAsync())
                     {
-                        todo = await _repository.FindById(todo.Id);
-
-                        return _mapper.GetDto(todo);
+                        ConfigureSingleResult(singleResult, dtoTodo);
                     }
                 }
 
-                return null;
+                return singleResult;
             }
             catch (Exception ex)
             {
                 string message = string.Format(Message.GetMessage("9"), dtoTodo.Title);
 
-                throw new Exception(message, ex);
+                errorMessages.Clear();
+                errorMessages.Add(message);
+                errorMessages.Add(ex.Message);
+
+                ConfigureSingleResult(singleResult, null, errorMessages);
+
+                return singleResult;
             }
         }
 
-        public async Task<DtoTodo> Update(DtoTodo dtoTodo)
+        public async Task<DtoSingleResult<DtoTodo>> Update(DtoTodo dtoTodo)
         {
+            DtoSingleResult<DtoTodo> singleResult = new();
+            var errorMessages = new List<string>();
+
             try
             {
-                var id = Guid.Parse(dtoTodo.Id);
-                var todo = await _repository.FindById(id);
+                var validationResult = Validate(dtoTodo);
 
-                Validate(dtoTodo);
-
-                if (todo is not null)
+                if (!validationResult.IsValid)
                 {
-                    todo = _mapper.GetEntity(dtoTodo);
+                    ConfigureSingleResult(singleResult, null, GetErrors(validationResult.Errors));
+
+                    return singleResult;
+                }
+
+                var id = Guid.Parse(dtoTodo.Id);
+
+                if (await _repository.AnyAsync(x => x.Id == id))
+                {
+                    var todo = _mapper.GetEntity(dtoTodo);
 
                     _repository.Update(todo);
 
                     if (await _repository.SaveChangesAsync())
                     {
-                        todo = await _repository.FindById(id);
-
-                        return _mapper.GetDto(todo);
+                        ConfigureSingleResult(singleResult, dtoTodo);
                     }
                 }
 
-                return null;
+                return singleResult;
             }
             catch (Exception ex)
             {
                 string message = string.Format(Message.GetMessage("11"), dtoTodo.Title);
 
-                throw new Exception(message, ex);
+                errorMessages.Clear();
+                errorMessages.Add(message);
+                errorMessages.Add(ex.Message);
+
+                ConfigureSingleResult(singleResult, null, errorMessages);
+
+                return singleResult;
             }
         }
 
-        public async Task<bool> Delete(string id)
+        public async Task<DtoResult> Delete(string id)
         {
+            DtoResult result = new();
+            var errorMessages = new List<string>();
+
             try
             {
-                var guid = GetIdAsGuid(id);
-                var todo = await _repository.FindById(guid);
+                var idAsGuid = GetIdAsGuid(id);
 
-                if (todo is null)
+                if (!await _repository.AnyAsync(x => x.Id == idAsGuid))
                 {
-                    throw new Exception(Message.GetMessage("12"));
+                    var message = string.Format(Message.GetMessage("12"), id);
+
+                    errorMessages.Add(message);
+                    ConfigureResult(result, errorMessages);
+
+                    return result;
                 }
+
+                var todo = await _repository.FindById(idAsGuid);
 
                 _repository.Delete(todo);
 
-                return await _repository.SaveChangesAsync();
+                if (await _repository.SaveChangesAsync())
+                {
+                    ConfigureResult(result);
+                }
+
+                return result;
             }
             catch (Exception ex)
             {
                 string message = string.Format(Message.GetMessage("10"), id);
 
+                errorMessages.Clear();
+                errorMessages.Add(message);
+                errorMessages.Add(ex.Message);
+
+                ConfigureResult(result, errorMessages);
+
+                return result;
+            }
+        }
+
+        public async Task<DtoResult> DeleteRange(List<string> ids)
+        {
+            DtoResult result = new();
+            var errorMessages = new List<string>();
+
+            try
+            {
+                var idsAsGuid = GetIdsAsGuid(ids);
+                var exist = await _repository.AnyAsync(todo => idsAsGuid.Any(id => id == todo.Id));
+
+                if (!exist)
+                {
+                    errorMessages.Add(Message.GetMessage("18"));
+                    ConfigureResult(result, errorMessages);
+
+                    return result;
+                }
+
+                var totalCount = GetTotalCountBy(todo => idsAsGuid.Any(id => id == todo.Id)).Result;
+
+                if (totalCount == ids.Count)
+                {
+                    var todos = await _repository.FindBy(todo => idsAsGuid.Any(id => id == todo.Id));
+
+                    _repository.DeleteRange(todos);
+
+                    if (await _repository.SaveChangesAsync())
+                    {
+                        ConfigureResult(result);
+                    }
+                }
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                string message = Message.GetMessage("19");
+
+                errorMessages.Add(message);
+                errorMessages.Add(ex.Message);
+
+                ConfigureResult(result, errorMessages);
+
+                return result;
+            }
+        }
+
+        #region PRIVATE METHODS
+
+        private async Task<int> GetTotalCountBy(Expression<Func<Todo, bool>> filter)
+        {
+            try
+            {
+                return await _repository.GetTotalCountBy(filter);
+            }
+            catch (Exception ex)
+            {
+                string message = string.Format(Message.GetMessage("3"));
+
                 throw new Exception(message, ex);
             }
         }
 
-        public async Task<bool> DeleteRange(List<string> ids)
-        {
-            try
-            {
-                var guids = GetIdsAsGuid(ids); 
-                var todos = await _repository.FindBy(todo => guids.Any(guid => guid == todo.Id));
-
-                if (todos is null || todos.Count() == 0)
-                {
-                    throw new Exception(Message.GetMessage("18"));
-                }
-
-                if (todos.Count() == ids.Count)
-                {
-                    _repository.DeleteRange(todos);
-                }
-
-                return await _repository.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(Message.GetMessage("19"), ex);
-            }
-        }
+        #endregion
     }
 }

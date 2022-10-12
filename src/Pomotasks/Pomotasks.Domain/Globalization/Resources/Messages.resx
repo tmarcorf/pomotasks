@@ -168,6 +168,12 @@
   <data name="24" xml:space="preserve">
     <value>Não foi possível encontrar as tarefas para o usuário solicitado. UserId: {0}</value>
   </data>
+  <data name="25" xml:space="preserve">
+    <value>Não foi possível encontrar as tarefas com o filtro informado.</value>
+  </data>
+  <data name="26" xml:space="preserve">
+    <value>Não existe uma tarefa cadastrada para o Id informado. Id: {0}</value>
+  </data>
   <data name="3" xml:space="preserve">
     <value>Não foi possível obter o total de tarefas. UserId: {0}</value>
   </data>

@@ -8,6 +8,8 @@ namespace Pomotasks.Persistence.Interfaces
 
         Task<IEnumerable<T>> FindBy(Expression<Func<T, bool>> filter);
 
+        Task<IEnumerable<T>> FindBy(Expression<Func<T, bool>> filter, int skip, int take);
+
         Task<IEnumerable<T>> FindAll(Guid userId, int skip, int take);
     }
 }

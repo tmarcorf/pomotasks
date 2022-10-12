@@ -1,4 +1,6 @@
-﻿namespace Pomotasks.Persistence.Interfaces
+﻿using System.Linq.Expressions;
+
+namespace Pomotasks.Persistence.Interfaces
 {
     public interface IRepository<T> where T : class
     {
@@ -11,5 +13,7 @@
         void DeleteRange(IEnumerable<T> entities);
 
         Task<bool> SaveChangesAsync();
+
+        Task<bool> AnyAsync(Expression<Func<T, bool>> filter);
     }
 }

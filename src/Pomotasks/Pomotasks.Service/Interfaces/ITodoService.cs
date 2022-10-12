@@ -6,20 +6,18 @@ namespace Pomotasks.Service.Interfaces
 {
     public interface ITodoService
     {
-        Task<DtoTodo> FindById(string id);
+        Task<DtoSingleResult<DtoTodo>> FindById(string id);
 
-        Task<IEnumerable<DtoTodo>> FindBy(Expression<Func<Todo, bool>> filter);
+        Task<DtoPagedResult<DtoTodo>> FindBy(Expression<Func<Todo, bool>> filter, int skip, int take);
 
-        Task<DtoPaged<DtoTodo>> FindAll(string userId, int skip, int take);
+        Task<DtoPagedResult<DtoTodo>> FindAll(string userId, int skip, int take);
 
-        Task<int> GetTotalCount(string userId);
+        Task<DtoSingleResult<DtoTodo>> Add(DtoTodo dtoTodo);
 
-        Task<DtoTodo> Add(DtoTodo dtoTodo);
+        Task<DtoSingleResult<DtoTodo>> Update(DtoTodo dtoTodo);
 
-        Task<DtoTodo> Update(DtoTodo dtoTodo);
+        Task<DtoResult> Delete(string id);
 
-        Task<bool> Delete(string id);
-
-        Task<bool> DeleteRange(List<string> ids);
+        Task<DtoResult> DeleteRange(List<string> ids);
     }
 }

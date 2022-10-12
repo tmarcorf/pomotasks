@@ -1,5 +1,7 @@
-﻿using Pomotasks.Persistence.Context;
+﻿using Microsoft.EntityFrameworkCore;
+using Pomotasks.Persistence.Context;
 using Pomotasks.Persistence.Interfaces;
+using System.Linq.Expressions;
 
 namespace Pomotasks.Persistence.Repositories
 {
@@ -36,6 +38,11 @@ namespace Pomotasks.Persistence.Repositories
         public async Task<bool> SaveChangesAsync()
         {
             return await _context.SaveChangesAsync() > 0;
+        }
+
+        public async Task<bool> AnyAsync(Expression<Func<T, bool>> filter)
+        {
+            return await _context.Set<T>().AnyAsync(filter);
         }
     }
 }

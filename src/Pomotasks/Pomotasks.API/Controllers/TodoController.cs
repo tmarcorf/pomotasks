@@ -2,7 +2,6 @@
 using Pomotasks.Domain.Dtos;
 using Pomotasks.Domain.Globalization;
 using Pomotasks.Service.Interfaces;
-using System.Net;
 
 namespace Pomotasks.API.Controllers
 {
@@ -37,11 +36,9 @@ namespace Pomotasks.API.Controllers
 
                 var pagedResult = await _service.FindAll(userId, skip, take);
 
-                if (pagedResult is null)
+                if (!pagedResult.Success)
                 {
-                    var message = string.Format(Message.GetMessage("24"), userId);
-
-                    return BadRequest(message);
+                    return BadRequest(pagedResult);
                 }
 
                 return Ok(pagedResult);
@@ -52,21 +49,19 @@ namespace Pomotasks.API.Controllers
             }
         }
 
-        [HttpGet("{id}")]
+        [HttpGet("id/{id}")]
         public async Task<IActionResult> FindById(string id)
         {
             try
             {
-                var dtoTodo = await _service.FindById(id);
+                var singleResult = await _service.FindById(id);
 
-                if (dtoTodo is null)
+                if (!singleResult.Success)
                 {
-                    string message = string.Format(Message.GetMessage("1"), id);
-
-                    return NotFound(message);
+                    return NotFound(singleResult);
                 }
 
-                return Ok(dtoTodo);
+                return Ok(singleResult);
             }
             catch (Exception ex)
             {
@@ -79,16 +74,21 @@ namespace Pomotasks.API.Controllers
         {
             try
             {
-                dtoTodo.Id = Guid.NewGuid().ToString();
-
-                var result = await _service.Add(dtoTodo);
-
-                if (result is null)
+                if (dtoTodo is null)
                 {
-                    return BadRequest();
+                    return BadRequest(Message.GetMessage("22"));
                 }
 
-                return Ok(result);
+                dtoTodo.Id = Guid.NewGuid().ToString();
+
+                var singleResult = await _service.Add(dtoTodo);
+
+                if (!singleResult.Success)
+                {
+                    return BadRequest(singleResult);
+                }
+
+                return Ok(singleResult);
             }
             catch (Exception ex)
             {
@@ -106,11 +106,31 @@ namespace Pomotasks.API.Controllers
                     return BadRequest(Message.GetMessage("22"));
                 }
 
-                var result = await _service.Update(dtoTodo);
+                var singleResult = await _service.Update(dtoTodo);
 
-                if (result is null)
+                if (!singleResult.Success)
                 {
-                    return BadRequest(Message.GetMessage("23"));
+                    return BadRequest(singleResult);
+                }
+
+                return Ok(singleResult);
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError, ex.Message);
+            }
+        }
+
+        [HttpDelete("id/{id}")]
+        public async Task<IActionResult> Delete(string id)
+        {
+            try
+            {
+                var result = await _service.Delete(id);
+
+                if (!result.Success)
+                {
+                    return BadRequest(result);
                 }
 
                 return Ok(result);
@@ -121,16 +141,16 @@ namespace Pomotasks.API.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(string id)
+        [HttpDelete("ids")]
+        public async Task<IActionResult> DeleteRange([FromBody] List<string> ids)
         {
             try
             {
-                var result = await _service.Delete(id);
+                var result = await _service.DeleteRange(ids);
 
-                if (!result)
+                if (!result.Success)
                 {
-                    return BadRequest(Message.GetMessage("10"));
+                    return BadRequest(result);
                 }
 
                 return Ok(result);

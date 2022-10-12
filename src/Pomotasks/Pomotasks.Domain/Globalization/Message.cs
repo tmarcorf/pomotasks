@@ -7,10 +7,6 @@ namespace Pomotasks.Domain.Globalization
     {
         private static ResourceManager _resourceManager;
 
-        public Message()
-        {
-        }
-
         public static string GetMessage(string key)
         {
             Configure();

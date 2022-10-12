@@ -1,6 +1,6 @@
 ﻿namespace Pomotasks.Domain.Dtos
 {
-    public class DtoPaged<T> where T : class
+    public class DtoPagedResult<T> : DtoResult where T : class
     {
         public int CurrentPage { get; set; }
 
