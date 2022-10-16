@@ -8,7 +8,7 @@ namespace Pomotasks.Persistence.Repositories
 {
     public class TodoRepository : Repository<Todo>, ITodoRepository
     {
-        public TodoRepository(ApplicationContext context) 
+        public TodoRepository(ApplicationContext context)
             : base(context)
         {
         }

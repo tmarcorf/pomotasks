@@ -1,6 +1,6 @@
 ﻿namespace Pomotasks.Domain.Enums
 {
-    public enum GenderTypeEnum
+    public enum EnumGenderType
     {
         FEMALE = 0,
 

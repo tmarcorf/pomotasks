@@ -9,7 +9,7 @@ using Pomotasks.Service.Services;
 
 namespace Pomotasks.API
 {
-    public class Program
+    public static class Program
     {
         public static void Main(string[] args)
         {
@@ -47,16 +47,6 @@ namespace Pomotasks.API
             }
 
             app.UseHttpsRedirection();
-
-            // Globalization
-            var supportedCultures = new[] { "pt-BR", "en-US" };
-
-            var localizationOptions = new RequestLocalizationOptions()
-                .SetDefaultCulture(supportedCultures[0])
-                .AddSupportedCultures(supportedCultures)
-                .AddSupportedUICultures(supportedCultures);
-
-            app.UseRequestLocalization(localizationOptions);
 
             app.UseAuthorization();
 

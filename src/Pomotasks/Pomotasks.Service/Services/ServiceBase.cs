@@ -48,14 +48,12 @@ namespace Pomotasks.Service.Services
         {
             var validator = Activator.CreateInstance(typeof(TValidator));
 
-            return (validator as TValidator).Validate(dto);
+            return (validator as TValidator)?.Validate(dto);
         }
 
         protected Guid GetIdAsGuid(string id)
         {
-            Guid result;
-
-            if (Guid.TryParse(id, out result))
+            if (Guid.TryParse(id, out Guid result))
             {
                 return result;
             }
@@ -65,12 +63,11 @@ namespace Pomotasks.Service.Services
 
         protected List<Guid> GetIdsAsGuid(List<string> ids)
         {
-            List<Guid> guids = new List<Guid>();
+            List<Guid> guids = new();
 
             ids.ForEach(id =>
             {
-                Guid result;
-                if (Guid.TryParse(id, out result))
+                if (Guid.TryParse(id, out Guid result))
                 {
                     guids.Add(result);
                 }
@@ -79,7 +76,7 @@ namespace Pomotasks.Service.Services
             return guids;
         }
 
-        protected void ConfigureResult(DtoResult result, List<string> errorMessages = null)
+        protected void ConfigureResult(DtoResult result, List<string> errorMessages = null!)
         {
             if (errorMessages is not null && errorMessages.Count > 0)
             {
@@ -89,7 +86,7 @@ namespace Pomotasks.Service.Services
             result.Success = (errorMessages is null || errorMessages.Count == 0);
         }
 
-        private int GetCurrentPage(int skip, int take)
+        private static int GetCurrentPage(int skip, int take)
         {
             return skip < take ? 1 : ((skip / take) + 1);
         }

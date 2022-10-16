@@ -31,7 +31,7 @@ namespace Pomotasks.Service.Services
             {
                 var todos = await _repository.FindAll(userIdAsGuid, skip, take);
 
-                if (todos is null || todos.Count() == 0)
+                if (todos is null || !todos.Any())
                 {
                     totalCount = 0;
                     errorMessages.Add(string.Format(Message.GetMessage("24"), userId));
@@ -70,7 +70,7 @@ namespace Pomotasks.Service.Services
             {
                 var todos = await _repository.FindBy(filter, skip, take);
 
-                if (todos is null || todos.Count() == 0)
+                if (todos is null || !todos.Any())
                 {
                     totalCount = 0;
                     errorMessages.Add(string.Format(Message.GetMessage("25")));
@@ -112,7 +112,7 @@ namespace Pomotasks.Service.Services
                     var message = string.Format(Message.GetMessage("26"), id);
                     errorMessages.Add(message);
 
-                    ConfigureSingleResult(singleResult, null, errorMessages);
+                    ConfigureSingleResult(singleResult, null!, errorMessages);
 
                     return singleResult;
                 }
@@ -129,7 +129,7 @@ namespace Pomotasks.Service.Services
                 errorMessages.Add(message);
                 errorMessages.Add(ex.Message);
 
-                ConfigureSingleResult(singleResult, null, errorMessages);
+                ConfigureSingleResult(singleResult, null!, errorMessages);
 
                 return singleResult;
             }
@@ -148,7 +148,7 @@ namespace Pomotasks.Service.Services
 
                 if (!validationResult.IsValid)
                 {
-                    ConfigureSingleResult(singleResult, null, GetErrors(validationResult.Errors));
+                    ConfigureSingleResult(singleResult, null!, GetErrors(validationResult.Errors));
 
                     return singleResult;
                 }
@@ -175,7 +175,7 @@ namespace Pomotasks.Service.Services
                 errorMessages.Add(message);
                 errorMessages.Add(ex.Message);
 
-                ConfigureSingleResult(singleResult, null, errorMessages);
+                ConfigureSingleResult(singleResult, null!, errorMessages);
 
                 return singleResult;
             }
@@ -192,7 +192,7 @@ namespace Pomotasks.Service.Services
 
                 if (!validationResult.IsValid)
                 {
-                    ConfigureSingleResult(singleResult, null, GetErrors(validationResult.Errors));
+                    ConfigureSingleResult(singleResult, null!, GetErrors(validationResult.Errors));
 
                     return singleResult;
                 }
@@ -221,7 +221,7 @@ namespace Pomotasks.Service.Services
                 errorMessages.Add(message);
                 errorMessages.Add(ex.Message);
 
-                ConfigureSingleResult(singleResult, null, errorMessages);
+                ConfigureSingleResult(singleResult, null!, errorMessages);
 
                 return singleResult;
             }
@@ -326,11 +326,9 @@ namespace Pomotasks.Service.Services
             {
                 return await _repository.GetTotalCountBy(filter);
             }
-            catch (Exception ex)
+            catch
             {
-                string message = string.Format(Message.GetMessage("3"));
-
-                throw new Exception(message, ex);
+                return 0;
             }
         }
 

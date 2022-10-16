@@ -11,7 +11,7 @@ namespace Pomotasks.Domain.Interfaces
 
         public DateTime DateOfBirth { get; set; }
 
-        public GenderTypeEnum GenderType { get; set; }
+        public EnumGenderType GenderType { get; set; }
 
         public Address Address { get; set; }
 

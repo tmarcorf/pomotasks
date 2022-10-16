@@ -14,10 +14,10 @@ namespace Pomotasks.Persistence.Context
         {
         }
 
-        public DbSet<Todo> Todos { get; set; }
+        public DbSet<Todo>? Todos { get; set; }
 
-        public DbSet<User> Users { get; set; }
+        public DbSet<User>? Users { get; set; }
 
-        public DbSet<Address> Addresses { get; set; }
+        public DbSet<Address>? Addresses { get; set; }
     }
 }

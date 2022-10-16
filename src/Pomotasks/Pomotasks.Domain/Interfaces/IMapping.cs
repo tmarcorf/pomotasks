@@ -1,7 +1,7 @@
 ﻿namespace Pomotasks.Domain.Interfaces
 {
-    public interface IMapping<TEntity, TDto> 
-        where TEntity : class 
+    public interface IMapping<TEntity, TDto>
+        where TEntity : class
         where TDto : class
     {
         TEntity GetEntity(TDto dto);

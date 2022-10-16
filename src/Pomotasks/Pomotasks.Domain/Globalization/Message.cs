@@ -1,51 +1,46 @@
 ﻿using Pomotasks.Domain.Globalization.Resources;
-using System.Resources;
 
 namespace Pomotasks.Domain.Globalization
 {
-    public class Message
+    public static class Message
     {
-        private static ResourceManager _resourceManager;
-
         public static string GetMessage(string key)
         {
-            Configure();
+            if (IsValid(key))
+            {
+                return Messages.ResourceManager.GetString(key);
+            }
 
-            ValidateKey(key);
-
-            return _resourceManager.GetString(key);
+            return string.Empty;
         }
 
         public static string GetMessage(string key, string[] componentMessages)
         {
-            Configure();
-
-            ValidateKey(key);
-            var messagesToIncrement = new List<string>();
-
-            foreach (var componentMessage in componentMessages)
+            if (!componentMessages.Any())
             {
-                ValidateKey(componentMessage);
-
-                messagesToIncrement.Add(_resourceManager.GetString(componentMessage));
+                return string.Empty;
             }
 
-            string message = string.Format(_resourceManager.GetString(key), messagesToIncrement.ToArray());
-
-            return message;
-        }
-
-        private static void ValidateKey(string key)
-        {
-            if (string.IsNullOrEmpty(key))
+            if (IsValid(key))
             {
-                throw new Exception(_resourceManager.GetString("17"));
+                var messagesToIncrement = new List<string>();
+
+                messagesToIncrement.AddRange(from componentMessage in componentMessages
+                                             where IsValid(componentMessage)
+                                             select Messages.ResourceManager.GetString(componentMessage));
+
+
+                string message = string.Format(Messages.ResourceManager.GetString(key), messagesToIncrement);
+
+                return message;
             }
+
+            return string.Empty;
         }
 
-        private static void Configure()
+        private static bool IsValid(string key)
         {
-            _resourceManager = Messages.ResourceManager;
+            return !string.IsNullOrEmpty(key);
         }
     }
 }
